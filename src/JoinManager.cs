@@ -61,6 +61,8 @@ public class JoinManager
             if (slot.AppearProgress < 1f)
                 slot.AppearProgress = Math.Min(slot.AppearProgress + dt / 0.15f, 1f);
 
+            if (slot.InputGrace > 0f) { slot.InputGrace -= dt; continue; }
+
             var cs = GetControllerState(slot, states);
             if (cs != null)
                 RouteInput(slot, cs, dt);
@@ -125,7 +127,7 @@ public class JoinManager
     {
         bool up      = cs.DPad["up"]    || cs.Axes["left_stick_y"] < -0.5f;
         bool down    = cs.DPad["down"]  || cs.Axes["left_stick_y"] >  0.5f;
-        bool confirm = cs.DPad["right"] || cs.Buttons["a"] || cs.Buttons["start"];
+        bool confirm = cs.DPad["right"] || cs.Buttons["a"]; // Start excluded — reserved for game launch
         bool back    = cs.DPad["left"]  || cs.Buttons["b"];
 
         slot.Entry.Update(dt, scrollUp: up, scrollDown: down, confirm: confirm, back: back);

@@ -20,6 +20,10 @@ public class JoinManagerTests
         return new Dictionary<int, ControllerState> { [controllerId] = cs };
     }
 
+    // Helper: drain the input grace period, keeping controller connected
+    private static void DrainGrace(JoinManager mgr, int controllerId)
+        => mgr.UpdateWithInput(0.3f, new Dictionary<int, ControllerState> { [controllerId] = new ControllerState(controllerId) });
+
     private static Dictionary<int, ControllerState> Empty() => new();
 
     private static JoinManager MakeOpen(int max = 8)
@@ -77,6 +81,7 @@ public class JoinManagerTests
         mgr.OnPlayerJoined += _ => fired++;
 
         mgr.UpdateWithInput(0f, Press(0));
+        DrainGrace(mgr, 0);
 
         // Confirm three times to complete initials, then run dismiss animation
         for (int i = 0; i < 3; i++) mgr.UpdateWithInput(0f, Confirm(0));
@@ -92,6 +97,7 @@ public class JoinManagerTests
         mgr.OnPlayerJoined += p => profile = p;
 
         mgr.UpdateWithInput(0f, Press(0));
+        DrainGrace(mgr, 0);
         for (int i = 0; i < 3; i++) mgr.UpdateWithInput(0f, Confirm(0));
         mgr.UpdateWithInput(0.2f, Empty());
 
@@ -105,6 +111,7 @@ public class JoinManagerTests
         mgr.OnPlayerJoined += p => profile = p;
 
         mgr.UpdateWithInput(0f, Press(0));
+        DrainGrace(mgr, 0);
         for (int i = 0; i < 3; i++) mgr.UpdateWithInput(0f, Confirm(0));
         mgr.UpdateWithInput(0.2f, Empty());
 
@@ -118,6 +125,7 @@ public class JoinManagerTests
         mgr.OnPlayerJoined += p => profile = p;
 
         mgr.UpdateWithInput(0f, Press(0));
+        DrainGrace(mgr, 0);
         for (int i = 0; i < 3; i++) mgr.UpdateWithInput(0f, Confirm(0));
         mgr.UpdateWithInput(0.2f, Empty());
 
@@ -156,6 +164,7 @@ public class JoinManagerTests
     {
         var mgr = MakeOpen();
         mgr.UpdateWithInput(0f, Press(0));
+        DrainGrace(mgr, 0);
         for (int i = 0; i < 3; i++) mgr.UpdateWithInput(0f, Confirm(0));
         mgr.UpdateWithInput(0.2f, Empty());
 
@@ -166,6 +175,7 @@ public class JoinManagerTests
     {
         var mgr = MakeOpen(1); // 1-player max so grid cell 0,0 is reused
         mgr.UpdateWithInput(0f, Press(0));
+        DrainGrace(mgr, 0);
         for (int i = 0; i < 3; i++) mgr.UpdateWithInput(0f, Confirm(0));
         mgr.UpdateWithInput(0.2f, Empty());
 

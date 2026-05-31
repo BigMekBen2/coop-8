@@ -5,11 +5,11 @@ public class JoinPopupRenderer
     private readonly int _screenW;
     private readonly int _screenH;
 
-    private const int POPUP_W = 340;
-    private const int POPUP_H = 320;
-    private const int GRID_PAD_X = 24;
-    private const int GRID_PAD_Y = 80;
-    private const int GRID_GAP   = 16;
+    // Scale with screen — at 3840×2160 these yield ~768×720 popups with ~48px gaps
+    private int PopupW   => _screenW / 5;
+    private int PopupH   => _screenH / 3;
+    private int GridGap  => Math.Max(_screenW / 80, 8);
+    private int GridPadY => _screenH / 20;
 
     public JoinPopupRenderer(int screenWidth, int screenHeight)
     {
@@ -50,8 +50,8 @@ public class JoinPopupRenderer
         if (scale <= 0.01f) return;
 
         var (cx, cy) = GridCenter(slot.GridCol, slot.GridRow);
-        int pw = (int)(POPUP_W * scale);
-        int ph = (int)(POPUP_H * scale);
+        int pw = (int)(PopupW * scale);
+        int ph = (int)(PopupH * scale);
         int px = cx - pw / 2;
         int py = cy - ph / 2;
 
@@ -177,12 +177,13 @@ public class JoinPopupRenderer
 
     private (int cx, int cy) GridCenter(int col, int row)
     {
-        int totalW = 4 * POPUP_W + 3 * GRID_GAP;
+        int pw = PopupW, ph = PopupH, gap = GridGap;
+        int totalW = 4 * pw + 3 * gap;
         int originX = (_screenW - totalW) / 2;
-        int originY = GRID_PAD_Y;
+        int originY = GridPadY;
 
-        int cx = originX + col * (POPUP_W + GRID_GAP) + POPUP_W / 2;
-        int cy = originY + row * (POPUP_H + GRID_GAP) + POPUP_H / 2;
+        int cx = originX + col * (pw + gap) + pw / 2;
+        int cy = originY + row * (ph + gap) + ph / 2;
         return (cx, cy);
     }
 
