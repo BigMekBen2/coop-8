@@ -1,0 +1,48 @@
+/* Player indicator – nine-slice panel */
+.player-indicator {
+  position: 10, 10;
+  size: 120, 48;
+  color: FFFFFF;
+  background-color: 222222;
+  font-size: 20;
+  background-image: assets/ui/panel.png;
+  background-size: nine-slice;
+  background-slice: 12 12 12 12;
+  background-tint: FFFFFF;
+  background-opacity: 1.0;
+  background-layer: above;
+  show: true;
+}
+
+/* Connection badge – cover mode */
+.connection-badge {
+  position: 10, 70;
+  size: 32, 32;
+  color: 00FF00;
+  background-image: assets/ui/badge.png;
+  background-size: cover;
+  background-align-h: center;
+  background-align-v: center;
+  background-opacity: 0.9;
+}
+
+/* Disconnect warning – tiled background */
+.disconnect-warning {
+  position: 400, 300;
+  size: 400, 100;
+  color: FF0000;
+  background-color: 000000;
+  font-size: 32;
+  background-image: assets/ui/warning-tile.png;
+  background-size: tile;
+  background-opacity: 0.8;
+  background-layer: below;
+}
+
+/* Controller name label – no image */
+.controller-name {
+  position: 10, 120;
+  size: 200, 24;
+  color: AAAAAA;
+  font-size: 14;
+}
