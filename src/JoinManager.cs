@@ -137,7 +137,7 @@ public class JoinManager
     private void FinalizeSlot(JoinSlot slot)
     {
         var color   = PlayerPalette.Colors[slot.PlayerId % PlayerPalette.Colors.Length];
-        var profile = new PlayerProfile(slot.PlayerId, slot.Entry.CurrentInitials, color, slot.IsKeyboard);
+        var profile = new PlayerProfile(slot.PlayerId, slot.ControllerId, slot.Entry.CurrentInitials, color, slot.IsKeyboard);
 
         _slots.Remove(slot.PlayerId);
         _controllerToSlot.Remove(slot.ControllerId);
