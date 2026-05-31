@@ -16,6 +16,8 @@ public class InitialsEntry
     private float _nextFireTime;
     private bool  _holdingScroll;
     private int   _scrollDir;
+    private bool  _prevConfirm;
+    private bool  _prevBack;
 
     public string CurrentInitials =>
         new(WheelIndices.Select(i => Wheel[i]).ToArray());
@@ -24,13 +26,18 @@ public class InitialsEntry
     {
         if (IsComplete) return;
 
+        // Rising-edge only for confirm/back — prevents a held button from firing every frame.
+        bool confirmPressed = confirm && !_prevConfirm;
+        bool backPressed    = back    && !_prevBack;
+        _prevConfirm = confirm;
+        _prevBack    = back;
+
         int scroll = scrollDown ? 1 : scrollUp ? -1 : 0;
 
         if (scroll != 0)
         {
             if (!_holdingScroll || _scrollDir != scroll)
             {
-                // Fresh press
                 ApplyScroll(scroll);
                 _holdTimer     = 0f;
                 _nextFireTime  = AutoRepeatDelay;
@@ -55,7 +62,7 @@ public class InitialsEntry
             _nextFireTime  = float.MaxValue;
         }
 
-        if (confirm)
+        if (confirmPressed)
         {
             if (Cursor < 2)
                 Cursor++;
@@ -63,7 +70,7 @@ public class InitialsEntry
                 IsComplete = true;
         }
 
-        if (back && !confirm)
+        if (backPressed && !confirmPressed)
         {
             if (Cursor > 0) Cursor--;
         }

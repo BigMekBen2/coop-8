@@ -5,11 +5,11 @@ public class JoinPopupRenderer
     private readonly int _screenW;
     private readonly int _screenH;
 
-    // Scale with screen — at 3840×2160 these yield ~768×720 popups with ~48px gaps
+    // Scale with screen — at 3840×2160: popup ~768×540, grid starts at y=720
     private int PopupW   => _screenW / 5;
-    private int PopupH   => _screenH / 3;
-    private int GridGap  => Math.Max(_screenW / 80, 8);
-    private int GridPadY => _screenH / 20;
+    private int PopupH   => _screenH / 4;
+    private int GridGap  => Math.Max(_screenW / 60, 8);
+    private int GridPadY => _screenH / 3;
 
     public JoinPopupRenderer(int screenWidth, int screenHeight)
     {

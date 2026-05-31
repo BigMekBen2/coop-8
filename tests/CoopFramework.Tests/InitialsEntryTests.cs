@@ -40,34 +40,41 @@ public class InitialsEntryTests
         Assert.Equal(InitialsEntry.Wheel.Length - 1, e.WheelIndices[0]);
     }
 
+    // Helper: press then release (rising-edge debounce requires a release between presses)
+    private static void Press(InitialsEntry e, bool confirm = false, bool back = false)
+    {
+        e.Update(0f, false, false, confirm, back);
+        e.Update(0f, false, false, false,   false); // release
+    }
+
     [Fact] public void Update_Confirm_AdvancesCursor()
     {
         var e = Make();
-        e.Update(0f, false, false, true, false);
+        Press(e, confirm: true);
         Assert.Equal(1, e.Cursor);
     }
 
     [Fact] public void Update_ConfirmAtColumn2_SetsIsComplete()
     {
         var e = Make();
-        e.Update(0f, false, false, true, false); // 0→1
-        e.Update(0f, false, false, true, false); // 1→2
-        e.Update(0f, false, false, true, false); // complete
+        Press(e, confirm: true); // 0→1
+        Press(e, confirm: true); // 1→2
+        Press(e, confirm: true); // complete
         Assert.True(e.IsComplete);
     }
 
     [Fact] public void Update_Back_ReturnsCursorLeft()
     {
         var e = Make();
-        e.Update(0f, false, false, true, false);  // cursor 0→1
-        e.Update(0f, false, false, false, true);  // cursor 1→0
+        Press(e, confirm: true);        // cursor 0→1
+        Press(e, back: true);           // cursor 1→0
         Assert.Equal(0, e.Cursor);
     }
 
     [Fact] public void Update_BackAtColumn0_DoesNothing()
     {
         var e = Make();
-        e.Update(0f, false, false, false, true);
+        Press(e, back: true);
         Assert.Equal(0, e.Cursor);
     }
 

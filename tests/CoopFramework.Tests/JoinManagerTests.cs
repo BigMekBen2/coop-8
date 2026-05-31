@@ -20,9 +20,20 @@ public class JoinManagerTests
         return new Dictionary<int, ControllerState> { [controllerId] = cs };
     }
 
+    // Controller connected, no buttons held (release or idle)
+    private static Dictionary<int, ControllerState> Release(int controllerId)
+        => new() { [controllerId] = new ControllerState(controllerId) };
+
     // Helper: drain the input grace period, keeping controller connected
     private static void DrainGrace(JoinManager mgr, int controllerId)
-        => mgr.UpdateWithInput(0.3f, new Dictionary<int, ControllerState> { [controllerId] = new ControllerState(controllerId) });
+        => mgr.UpdateWithInput(0.3f, Release(controllerId));
+
+    // Press A then release — required by rising-edge debounce
+    private static void TapConfirm(JoinManager mgr, int controllerId)
+    {
+        mgr.UpdateWithInput(0f, Confirm(controllerId));
+        mgr.UpdateWithInput(0f, Release(controllerId));
+    }
 
     private static Dictionary<int, ControllerState> Empty() => new();
 
@@ -84,7 +95,7 @@ public class JoinManagerTests
         DrainGrace(mgr, 0);
 
         // Confirm three times to complete initials, then run dismiss animation
-        for (int i = 0; i < 3; i++) mgr.UpdateWithInput(0f, Confirm(0));
+        for (int i = 0; i < 3; i++) TapConfirm(mgr, 0);
         mgr.UpdateWithInput(0.2f, Empty()); // dismiss animation completes
 
         Assert.Equal(1, fired);
@@ -98,7 +109,7 @@ public class JoinManagerTests
 
         mgr.UpdateWithInput(0f, Press(0));
         DrainGrace(mgr, 0);
-        for (int i = 0; i < 3; i++) mgr.UpdateWithInput(0f, Confirm(0));
+        for (int i = 0; i < 3; i++) TapConfirm(mgr, 0);
         mgr.UpdateWithInput(0.2f, Empty());
 
         Assert.Equal(0, profile!.PlayerId);
@@ -112,7 +123,7 @@ public class JoinManagerTests
 
         mgr.UpdateWithInput(0f, Press(0));
         DrainGrace(mgr, 0);
-        for (int i = 0; i < 3; i++) mgr.UpdateWithInput(0f, Confirm(0));
+        for (int i = 0; i < 3; i++) TapConfirm(mgr, 0);
         mgr.UpdateWithInput(0.2f, Empty());
 
         Assert.Equal(PlayerPalette.Colors[0], profile!.Color);
@@ -126,7 +137,7 @@ public class JoinManagerTests
 
         mgr.UpdateWithInput(0f, Press(0));
         DrainGrace(mgr, 0);
-        for (int i = 0; i < 3; i++) mgr.UpdateWithInput(0f, Confirm(0));
+        for (int i = 0; i < 3; i++) TapConfirm(mgr, 0);
         mgr.UpdateWithInput(0.2f, Empty());
 
         // Default wheel indices are 0,0,0 → "AAA"
@@ -165,7 +176,7 @@ public class JoinManagerTests
         var mgr = MakeOpen();
         mgr.UpdateWithInput(0f, Press(0));
         DrainGrace(mgr, 0);
-        for (int i = 0; i < 3; i++) mgr.UpdateWithInput(0f, Confirm(0));
+        for (int i = 0; i < 3; i++) TapConfirm(mgr, 0);
         mgr.UpdateWithInput(0.2f, Empty());
 
         Assert.Equal(1, mgr.ConfirmedCount);
@@ -176,7 +187,7 @@ public class JoinManagerTests
         var mgr = MakeOpen(1); // 1-player max so grid cell 0,0 is reused
         mgr.UpdateWithInput(0f, Press(0));
         DrainGrace(mgr, 0);
-        for (int i = 0; i < 3; i++) mgr.UpdateWithInput(0f, Confirm(0));
+        for (int i = 0; i < 3; i++) TapConfirm(mgr, 0);
         mgr.UpdateWithInput(0.2f, Empty());
 
         // After confirm, confirmed count is 1, but maxPlayers=1 so no new slots possible
